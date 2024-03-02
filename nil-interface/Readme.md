@@ -16,3 +16,4 @@ query parameters is a common operation.
 ## Explorations
 
 1. The baseline experiment showing they problem is commit https://github.com/jsumners/go-experiments/tree/3326ede13ec28504b3e3d53eb9203a0662c2c38a/nil-interface
+2. The issue being solved by reflection is commit https://github.com/jsumners/go-experiments/tree/3791e8cfb48f82a393512e006187f017f3c0c29d
