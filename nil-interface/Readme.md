@@ -12,3 +12,7 @@ We are exploring this issue via a simple HTTP client with methods that can
 accept query parameters, but do not require query parameters. Each method has
 a distinct set of possible query parameters, but building the URL from the
 query parameters is a common operation.
+
+## Explorations
+
+1. The baseline experiment showing they problem is commit https://github.com/jsumners/go-experiments/tree/3326ede13ec28504b3e3d53eb9203a0662c2c38a/nil-interface
