@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"reflect"
 )
 
 type QueryParams interface {
@@ -29,7 +30,7 @@ func NewClient(baseUrl string) *Client {
 func (c *Client) get(path string, target any, params QueryParams) error {
 	destUrl := c.BaseUrl
 	destUrl.Path = destUrl.Path + path
-	if params != nil {
+	if reflect.ValueOf(params).IsNil() == false {
 		destUrl.RawQuery = params.Values().Encode()
 	}
 
