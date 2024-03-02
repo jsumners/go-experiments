@@ -17,3 +17,11 @@ query parameters is a common operation.
 
 1. The baseline experiment showing they problem is commit https://github.com/jsumners/go-experiments/tree/3326ede13ec28504b3e3d53eb9203a0662c2c38a/nil-interface
 2. The issue being solved by reflection is commit https://github.com/jsumners/go-experiments/tree/3791e8cfb48f82a393512e006187f017f3c0c29d
+
+## Benchmark
+
+[./main_test.go](./main_test.go) has a benchmark that shows two ways of solving
+the issue along with a benchmark of each. It shouldn't be any surprise that
+using reflection to solve the issue is a less performant method, but it is
+likely easier since the alternative method needs to know about all possible
+implementations of the interface.
