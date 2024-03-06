@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cli/internal/client"
 	"cli/internal/cmd/auth"
 	"cli/internal/cmd/conf"
 	"cli/internal/cmd/root"
@@ -11,12 +12,13 @@ import (
 
 var configFilePath string
 var cfg *config.CliConfig
+var httpClient *client.Client
 
 func main() {
 	cfg = config.New()
-	cmd := root.New(&configFilePath, initConfig)
+	cmd := root.New(&configFilePath, initConfig, createClient)
 	cmd.AddCommand(conf.New(cfg))
-	cmd.AddCommand(auth.New(cfg))
+	cmd.AddCommand(auth.New(httpClient))
 
 	err := cmd.Execute()
 	if err != nil {
@@ -28,4 +30,13 @@ func main() {
 
 func initConfig() error {
 	return cfg.ReadConfig(configFilePath)
+}
+
+func createClient() error {
+	c, err := client.New(cfg.GetString("auth_key"))
+	if err != nil {
+		return err
+	}
+	httpClient = c
+	return nil
 }
