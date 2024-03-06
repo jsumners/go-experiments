@@ -4,10 +4,7 @@ import (
 	"cli/internal/config"
 	"fmt"
 	"github.com/MakeNowJust/heredoc"
-	"github.com/creasty/defaults"
-	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
 )
 
 func New(cfg *config.CliConfig) *cobra.Command {
@@ -33,7 +30,7 @@ func New(cfg *config.CliConfig) *cobra.Command {
 		Use:   "generate",
 		Short: "Write default configuration to stdout.",
 		RunE: func(*cobra.Command, []string) error {
-			return generateConfig()
+			return generateConfig(cfg)
 		},
 	}
 	cmd.AddCommand(generateConfigCommand)
@@ -42,41 +39,19 @@ func New(cfg *config.CliConfig) *cobra.Command {
 }
 
 func dumpConfig(cfg *config.CliConfig) error {
-	encodedData := make(map[string]any)
-	err := mapstructure.Decode(cfg, &encodedData)
+	yml, err := cfg.GenerateCurrentYaml()
 	if err != nil {
-		return fmt.Errorf("unable to encode configuration: %w", err)
+		return err
 	}
-
-	data, err := yaml.Marshal(encodedData)
-	if err != nil {
-		return fmt.Errorf("unable to marshal configuration to yaml: %w", err)
-	}
-
-	fmt.Println(string(data))
+	fmt.Println(yml)
 	return nil
 }
 
-func generateConfig() error {
-	defaultConfig := config.CliConfig{}
-	err := defaults.Set(&defaultConfig)
+func generateConfig(cfg *config.CliConfig) error {
+	yml, err := cfg.GenerateDefaultYaml()
 	if err != nil {
-		return fmt.Errorf("unable to generate default config: %w", err)
+		return err
 	}
-
-	// We decode to a generic interface in order to rename the struct fields
-	// according to the `mapstructure` tag.
-	var encoded map[string]any
-	err = mapstructure.Decode(defaultConfig, &encoded)
-	if err != nil {
-		return fmt.Errorf("unable to decode configuration: %w", err)
-	}
-
-	yamlEncoded, err := yaml.Marshal(encoded)
-	if err != nil {
-		return fmt.Errorf("unable to encode configuration to yaml: %w", err)
-	}
-	fmt.Println(string(yamlEncoded))
-
+	fmt.Println(yml)
 	return nil
 }

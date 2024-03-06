@@ -3,7 +3,10 @@ package config
 import (
 	"errors"
 	"fmt"
+	"github.com/creasty/defaults"
+	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
 )
 
 type CliConfig struct {
@@ -51,4 +54,42 @@ func (c *CliConfig) ReadConfig(configFilePath string) error {
 	}
 
 	return nil
+}
+
+func (c *CliConfig) GenerateCurrentYaml() (string, error) {
+	encodedData := make(map[string]any)
+	err := mapstructure.Decode(c, &encodedData)
+	if err != nil {
+		return "", fmt.Errorf("unable to encode configuration: %w", err)
+	}
+
+	yamlEncoded, err := yaml.Marshal(encodedData)
+	if err != nil {
+		return "", fmt.Errorf("unable to marshal configuration to yaml: %w", err)
+	}
+
+	return string(yamlEncoded), nil
+}
+
+func (c *CliConfig) GenerateDefaultYaml() (string, error) {
+	defaultConfig := CliConfig{}
+	err := defaults.Set(&defaultConfig)
+	if err != nil {
+		return "", fmt.Errorf("unable to generate default config: %w", err)
+	}
+
+	// We decode to a generic interface in order to rename the struct fields
+	// according to the `mapstructure` tag.
+	var encoded map[string]any
+	err = mapstructure.Decode(defaultConfig, &encoded)
+	if err != nil {
+		return "", fmt.Errorf("unable to decode configuration: %w", err)
+	}
+
+	yamlEncoded, err := yaml.Marshal(encoded)
+	if err != nil {
+		return "", fmt.Errorf("unable to encode configuration to yaml: %w", err)
+	}
+
+	return string(yamlEncoded), nil
 }
