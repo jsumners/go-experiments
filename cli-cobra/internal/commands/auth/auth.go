@@ -1,25 +1,26 @@
 package auth
 
 import (
+	"cli/internal/app"
 	"cli/internal/client"
 	"fmt"
 	"github.com/spf13/cobra"
 )
 
-func New(httpClient *client.Client) *cobra.Command {
+func New(app *app.CliApp) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "auth",
 		Short: "Authenticate to remote service.",
 		RunE: func(*cobra.Command, []string) error {
-			return run(httpClient)
+			return run(app.HttpClient)
 		},
 	}
 
 	return cmd
 }
 
-func run(httpClient *client.Client) error {
-	err := httpClient.Authenticate()
+func run(client *client.Client) error {
+	err := client.Authenticate()
 
 	if err != nil {
 		fmt.Println("authentication failed")

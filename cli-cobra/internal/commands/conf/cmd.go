@@ -1,13 +1,14 @@
 package conf
 
 import (
+	"cli/internal/app"
 	"cli/internal/config"
 	"fmt"
 	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
 )
 
-func New(cfg *config.CliConfig) *cobra.Command {
+func New(app *app.CliApp) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "config",
 		Short: "Manage configuration.",
@@ -21,7 +22,7 @@ func New(cfg *config.CliConfig) *cobra.Command {
 			from the configuration file, to stdout.
 		`),
 		RunE: func(*cobra.Command, []string) error {
-			return dumpConfig(cfg)
+			return dumpConfig(app.Config)
 		},
 	}
 	cmd.AddCommand(dumpConfigCommand)
@@ -30,7 +31,7 @@ func New(cfg *config.CliConfig) *cobra.Command {
 		Use:   "generate",
 		Short: "Write default configuration to stdout.",
 		RunE: func(*cobra.Command, []string) error {
-			return generateConfig(cfg)
+			return generateConfig(app.Config)
 		},
 	}
 	cmd.AddCommand(generateConfigCommand)
