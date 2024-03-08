@@ -6,11 +6,17 @@ import (
 
 type InitFn func() error
 
-func New(configFile *string, initFn InitFn) *cobra.Command {
+func New(configFile *string, initFns ...InitFn) *cobra.Command {
 	cmd := &cobra.Command{
 		Short: "cli is an example",
 		PersistentPreRunE: func(*cobra.Command, []string) error {
-			return initFn()
+			for _, initFn := range initFns {
+				err := initFn()
+				if err != nil {
+					return err
+				}
+			}
+			return nil
 		},
 	}
 
